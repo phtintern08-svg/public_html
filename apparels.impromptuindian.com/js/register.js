@@ -11,7 +11,8 @@ const ThreadlyApi = window.ThreadlyApi || (() => {
         if (origin && origin.startsWith('http')) {
             base = origin.replace(/\/$/, '');
         } else {
-            base = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://apparels.impromptuindian.com';
+            // PRODUCTION ONLY - Use production domain
+            base = 'https://apparels.impromptuindian.com';
         }
     }
 

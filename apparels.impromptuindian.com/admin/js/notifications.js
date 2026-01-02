@@ -1,6 +1,6 @@
 // notifications.js – admin notification center (backend integration)
 
-const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://apparels.impromptuindian.com';
+const API_BASE = 'https://apparels.impromptuindian.com';
 
 function showToast(msg) {
     const toast = document.getElementById('toast');

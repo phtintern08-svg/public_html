@@ -1,6 +1,6 @@
 // orders.js - Orders landing page with category navigation
 // Ensure backend connectivity
-window.THREADLY_API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://apparels.impromptuindian.com';
+window.THREADLY_API_BASE = 'https://apparels.impromptuindian.com';
 // ThreadlyApi is provided by sidebar.js
 
 // Reveal on scroll animation

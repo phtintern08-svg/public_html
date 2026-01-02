@@ -248,7 +248,7 @@ function isValidPhone(phone) {
 }
 
 function getApiBase() {
-    return window.THREADLY_API_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://apparels.impromptuindian.com');
+    return window.THREADLY_API_BASE || 'https://apparels.impromptuindian.com';
 }
 
 // Alert Functions

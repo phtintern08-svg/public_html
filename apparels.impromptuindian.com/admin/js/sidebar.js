@@ -14,7 +14,7 @@
         if (origin && origin.startsWith('http')) {
           base = origin.replace(/\/$/, '');
         } else {
-          base = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://apparels.impromptuindian.com';
+          base = 'https://apparels.impromptuindian.com';
         }
       }
 
@@ -234,7 +234,7 @@
   function logout(event) {
     if (event) event.preventDefault();
     localStorage.clear();
-    window.location.href = window.location.hostname === 'localhost' ? 'http://localhost:5000/' : 'https://apparels.impromptuindian.com/';
+    window.location.href = 'https://apparels.impromptuindian.com/';
   }
 
   document.addEventListener("DOMContentLoaded", () => {
