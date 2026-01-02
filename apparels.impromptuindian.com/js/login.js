@@ -78,21 +78,41 @@ if (loginForm) {
             // Try to parse response as JSON, handle HTML error pages gracefully
             let result;
             try {
+                // Check if response is ok and has content
+                if (!response.ok && response.status >= 500) {
+                    showAlert('Server Error', 'The server encountered an error. Please try again later.', 'error');
+                    return;
+                }
+                
                 const text = await response.text();
                 
+                // Check if response is empty
+                if (!text || text.trim().length === 0) {
+                    showAlert('Server Error', 'Server returned an empty response. Please try again.', 'error');
+                    return;
+                }
+                
                 // Check if response is HTML (error page)
-                if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
-                    console.error('Server returned HTML instead of JSON. This usually means the API endpoint is not found or the server is returning an error page.');
+                const trimmedText = text.trim();
+                if (trimmedText.startsWith('<!DOCTYPE') || trimmedText.startsWith('<html') || trimmedText.startsWith('<?xml')) {
+                    console.warn('Server returned HTML instead of JSON. This usually means the API endpoint is not found or the server is returning an error page.');
                     showAlert('Server Error', 'Unable to reach the login service. Please check if the server is running.', 'error');
                     return;
                 }
                 
                 // Try to parse as JSON
-                result = JSON.parse(text);
+                try {
+                    result = JSON.parse(text);
+                } catch (jsonError) {
+                    // If JSON parsing fails, log the actual response for debugging
+                    console.warn('Failed to parse response as JSON. Response:', text.substring(0, 200));
+                    showAlert('Server Error', 'Server returned an invalid response. Please try again later.', 'error');
+                    return;
+                }
             } catch (parseError) {
-                // If JSON parsing fails, show a more helpful error
-                console.error('Failed to parse response as JSON:', parseError);
-                showAlert('Server Error', 'Server returned an invalid response. Please try again later.', 'error');
+                // If reading response fails, show a helpful error
+                console.warn('Failed to read response:', parseError);
+                showAlert('Server Error', 'Unable to read server response. Please check your connection and try again.', 'error');
                 return;
             }
 
