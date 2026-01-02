@@ -303,7 +303,30 @@ async function handleGetOtp(fieldId) {
             body: JSON.stringify({ recipient: inputField.value, type: type })
         });
 
-        const result = await response.json();
+        // Handle response - check for HTML error pages
+        let result;
+        try {
+            const text = await response.text();
+
+            // Check if response is HTML (error page)
+            if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+                console.error('Server returned HTML instead of JSON. This usually means the API endpoint is not found or the server is returning an error page.');
+                showAlert('Server Error', 'Unable to reach the OTP service. Please check if the server is running.', 'error');
+                getOtpBtn.disabled = false;
+                getOtpBtn.innerText = "Get OTP";
+                return;
+            }
+
+            // Try to parse as JSON
+            result = JSON.parse(text);
+        } catch (parseError) {
+            // If JSON parsing fails, show a more helpful error
+            console.error('Failed to parse response as JSON:', parseError);
+            showAlert('Server Error', 'Server returned an invalid response. Please try again later.', 'error');
+            getOtpBtn.disabled = false;
+            getOtpBtn.innerText = "Get OTP";
+            return;
+        }
 
         if (response.ok) {
             showAlert('OTP Sent', `OTP sent to ${inputField.value}. ${type === 'phone' ? 'Check your phone.' : 'Check your email.'}`, 'success');
@@ -387,7 +410,26 @@ async function verifyOtp(fieldId) {
             })
         });
 
-        const result = await response.json();
+        // Handle response - check for HTML error pages
+        let result;
+        try {
+            const text = await response.text();
+
+            // Check if response is HTML (error page)
+            if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+                console.error('Server returned HTML instead of JSON. This usually means the API endpoint is not found or the server is returning an error page.');
+                showAlert('Server Error', 'Unable to reach the OTP verification service. Please check if the server is running.', 'error');
+                return;
+            }
+
+            // Try to parse as JSON
+            result = JSON.parse(text);
+        } catch (parseError) {
+            // If JSON parsing fails, show a more helpful error
+            console.error('Failed to parse response as JSON:', parseError);
+            showAlert('Server Error', 'Server returned an invalid response. Please try again later.', 'error');
+            return;
+        }
 
         if (response.ok && result.verified) {
             verificationStatus[fieldId] = true;
@@ -431,7 +473,26 @@ async function registerUser(data) {
             body: JSON.stringify(data)
         });
 
-        const result = await response.json();
+        // Handle response - check for HTML error pages
+        let result;
+        try {
+            const text = await response.text();
+
+            // Check if response is HTML (error page)
+            if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+                console.error('Server returned HTML instead of JSON. This usually means the API endpoint is not found or the server is returning an error page.');
+                showAlert('Server Error', 'Unable to reach the registration service. Please check if the server is running.', 'error');
+                return;
+            }
+
+            // Try to parse as JSON
+            result = JSON.parse(text);
+        } catch (parseError) {
+            // If JSON parsing fails, show a more helpful error
+            console.error('Failed to parse response as JSON:', parseError);
+            showAlert('Server Error', 'Server returned an invalid response. Please try again later.', 'error');
+            return;
+        }
 
         if (response.ok) {
             showAlert('Success', 'Registration successful! Redirecting to login...', 'success');
