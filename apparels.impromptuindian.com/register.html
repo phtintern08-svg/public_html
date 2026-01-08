@@ -135,9 +135,14 @@
 
         <div>
           <label class="text-sm text-gray-300">Password</label>
-          <input type="password" id="custPass"
-            class="w-full mt-1 p-2 rounded bg-[#131820] border border-gray-700 text-white" required
-            oninput="checkPasswordStrength('cust')" />
+          <div class="relative">
+            <input type="password" id="custPass"
+              class="w-full mt-1 p-2 pr-10 rounded bg-[#131820] border border-gray-700 text-white" required
+              oninput="checkPasswordStrength('cust')" />
+            <button type="button" id="toggleCustPass" class="absolute right-3 top-1/2 -translate-y-1/2 mt-1 text-gray-400 hover:text-gray-300 focus:outline-none">
+              <i data-lucide="eye" id="custPassEyeIcon" class="w-5 h-5"></i>
+            </button>
+          </div>
           <!-- Password Strength Indicator -->
           <div id="custPasswordStrength" class="hidden mt-2 text-xs space-y-1">
             <p id="custCondLength" class="text-gray-500"><span class="cond-icon">○</span> Minimum 8 characters</p>
@@ -153,9 +158,14 @@
 
         <div>
           <label class="text-sm text-gray-300">Re-type Password</label>
-          <input type="password" id="custConfirmPass"
-            class="w-full mt-1 p-2 rounded bg-[#131820] border border-gray-700 text-white" required
-            oninput="checkPasswordMatch('cust')" />
+          <div class="relative">
+            <input type="password" id="custConfirmPass"
+              class="w-full mt-1 p-2 pr-10 rounded bg-[#131820] border border-gray-700 text-white" required
+              oninput="checkPasswordMatch('cust')" />
+            <button type="button" id="toggleCustConfirmPass" class="absolute right-3 top-1/2 -translate-y-1/2 mt-1 text-gray-400 hover:text-gray-300 focus:outline-none">
+              <i data-lucide="eye" id="custConfirmPassEyeIcon" class="w-5 h-5"></i>
+            </button>
+          </div>
           <p id="custPasswordMatch" class="text-xs mt-1 hidden"></p>
         </div>
 
@@ -251,9 +261,14 @@
 
         <div>
           <label class="text-sm text-gray-300">Password</label>
-          <input type="password" id="vendPass"
-            class="w-full mt-1 p-2 rounded bg-[#131820] border border-gray-700 text-white" required
-            oninput="checkPasswordStrength('vend')" />
+          <div class="relative">
+            <input type="password" id="vendPass"
+              class="w-full mt-1 p-2 pr-10 rounded bg-[#131820] border border-gray-700 text-white" required
+              oninput="checkPasswordStrength('vend')" />
+            <button type="button" id="toggleVendPass" class="absolute right-3 top-1/2 -translate-y-1/2 mt-1 text-gray-400 hover:text-gray-300 focus:outline-none">
+              <i data-lucide="eye" id="vendPassEyeIcon" class="w-5 h-5"></i>
+            </button>
+          </div>
           <!-- Password Strength Indicator -->
           <div id="vendPasswordStrength" class="hidden mt-2 text-xs space-y-1">
             <p id="vendCondLength" class="text-gray-500"><span class="cond-icon">○</span> Minimum 8 characters</p>
@@ -269,9 +284,14 @@
 
         <div>
           <label class="text-sm text-gray-300">Re-type Password</label>
-          <input type="password" id="vendConfirmPass"
-            class="w-full mt-1 p-2 rounded bg-[#131820] border border-gray-700 text-white" required
-            oninput="checkPasswordMatch('vend')" />
+          <div class="relative">
+            <input type="password" id="vendConfirmPass"
+              class="w-full mt-1 p-2 pr-10 rounded bg-[#131820] border border-gray-700 text-white" required
+              oninput="checkPasswordMatch('vend')" />
+            <button type="button" id="toggleVendConfirmPass" class="absolute right-3 top-1/2 -translate-y-1/2 mt-1 text-gray-400 hover:text-gray-300 focus:outline-none">
+              <i data-lucide="eye" id="vendConfirmPassEyeIcon" class="w-5 h-5"></i>
+            </button>
+          </div>
           <p id="vendPasswordMatch" class="text-xs mt-1 hidden"></p>
         </div>
 
@@ -316,6 +336,38 @@
     window.THREADLY_API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://apparels.impromptuindian.com';
   </script>
   <script src="js/register.js"></script>
+  <script>
+    // Initialize password toggle functionality for all password fields
+    document.addEventListener('DOMContentLoaded', function() {
+      // Helper function to toggle password visibility
+      function setupPasswordToggle(inputId, toggleButtonId, iconId) {
+        const passwordInput = document.getElementById(inputId);
+        const toggleButton = document.getElementById(toggleButtonId);
+        const eyeIcon = document.getElementById(iconId);
+
+        if (toggleButton && passwordInput && eyeIcon) {
+          toggleButton.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Toggle icon between eye and eye-off
+            if (type === 'text') {
+              eyeIcon.setAttribute('data-lucide', 'eye-off');
+            } else {
+              eyeIcon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+          });
+        }
+      }
+
+      // Setup toggles for all password fields
+      setupPasswordToggle('custPass', 'toggleCustPass', 'custPassEyeIcon');
+      setupPasswordToggle('custConfirmPass', 'toggleCustConfirmPass', 'custConfirmPassEyeIcon');
+      setupPasswordToggle('vendPass', 'toggleVendPass', 'vendPassEyeIcon');
+      setupPasswordToggle('vendConfirmPass', 'toggleVendConfirmPass', 'vendConfirmPassEyeIcon');
+    });
+  </script>
 
 </body>
 

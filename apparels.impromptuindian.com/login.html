@@ -61,9 +61,14 @@
               </a>
             </div>
 
-            <input type="password" id="password" placeholder="••••••"
-              class="w-full px-3 py-2 rounded bg-[#0f1624] border border-gray-700 text-white focus:border-blue-500 focus:outline-none"
-              required />
+            <div class="relative">
+              <input type="password" id="password" placeholder="••••••"
+                class="w-full px-3 py-2 pr-10 rounded bg-[#0f1624] border border-gray-700 text-white focus:border-blue-500 focus:outline-none"
+                required />
+              <button type="button" id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300 focus:outline-none">
+                <i data-lucide="eye" id="passwordEyeIcon" class="w-5 h-5"></i>
+              </button>
+            </div>
           </div>
 
           <button type="submit" class="w-full bg-[#1273EB]  transition text-white py-2 rounded-md font-semibold">
@@ -110,6 +115,29 @@
 
   <!-- Custom JS -->
   <script src="js/login.js"></script>
+  <script>
+    // Initialize password toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const passwordInput = document.getElementById('password');
+      const toggleButton = document.getElementById('togglePassword');
+      const eyeIcon = document.getElementById('passwordEyeIcon');
+
+      if (toggleButton && passwordInput) {
+        toggleButton.addEventListener('click', function() {
+          const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+          passwordInput.setAttribute('type', type);
+          
+          // Toggle icon between eye and eye-off
+          if (type === 'text') {
+            eyeIcon.setAttribute('data-lucide', 'eye-off');
+          } else {
+            eyeIcon.setAttribute('data-lucide', 'eye');
+          }
+          lucide.createIcons();
+        });
+      }
+    });
+  </script>
 
 </body>
 
