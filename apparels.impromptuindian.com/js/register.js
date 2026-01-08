@@ -285,6 +285,17 @@ async function handleGetOtp(fieldId) {
         return;
     }
 
+    // Validate email format before sending OTP
+    if (type === 'email') {
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(inputField.value)) {
+            showAlert('Invalid Email', 'Please enter a valid email address.', 'error');
+            getOtpBtn.disabled = false;
+            getOtpBtn.innerText = "Get OTP";
+            return;
+        }
+    }
+
     // Validate Indian phone number before sending OTP - DISABLED
     // if (type === 'phone') {
     //     if (!validateIndianPhone(inputField.value)) {
