@@ -102,6 +102,15 @@ if (loginForm) {
                     return;
                 }
                 
+                // Check content type before reading response
+                const contentType = response.headers.get('content-type');
+                if (contentType && !contentType.includes('application/json')) {
+                    if (contentType.includes('text/html')) {
+                        showAlert('Server Error', 'Unable to reach the login service. The endpoint may not be available.', 'error');
+                        return;
+                    }
+                }
+                
                 const text = await response.text();
                 
                 // Check if response is empty
@@ -110,10 +119,10 @@ if (loginForm) {
                     return;
                 }
                 
-                // Check if response is HTML (error page)
+                // Check if response is HTML (error page) - check before parsing
                 const trimmedText = text.trim();
                 if (trimmedText.startsWith('<!DOCTYPE') || trimmedText.startsWith('<html') || trimmedText.startsWith('<?xml')) {
-                    console.warn('Server returned HTML instead of JSON. This usually means the API endpoint is not found or the server is returning an error page.');
+                    // Silently handle HTML responses without logging to console
                     showAlert('Server Error', 'Unable to reach the login service. Please check if the server is running.', 'error');
                     return;
                 }
@@ -122,7 +131,12 @@ if (loginForm) {
                 try {
                     result = JSON.parse(text);
                 } catch (jsonError) {
-                    // If JSON parsing fails, log the actual response for debugging
+                    // If JSON parsing fails, check if it's HTML and handle silently
+                    if (trimmedText.startsWith('<!DOCTYPE') || trimmedText.startsWith('<html')) {
+                        showAlert('Server Error', 'Unable to reach the login service. Please check if the server is running.', 'error');
+                        return;
+                    }
+                    // Only log non-HTML parsing errors
                     console.warn('Failed to parse response as JSON. Response:', text.substring(0, 200));
                     showAlert('Server Error', 'Server returned an invalid response. Please try again later.', 'error');
                     return;
