@@ -1,4 +1,34 @@
 
+// Show articles immediately without waiting for DOMContentLoaded
+(function() {
+    'use strict';
+    
+    // Immediately show initial articles (no waiting for DOMContentLoaded)
+    // This runs as soon as the script loads, before DOMContentLoaded
+    if (document.readyState === 'loading') {
+        // DOM is still loading, use DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', showInitialArticles);
+    } else {
+        // DOM is already loaded
+        showInitialArticles();
+    }
+    
+    function showInitialArticles() {
+        const articles = document.querySelectorAll('.blog-article');
+        const itemsToShowInitially = 6;
+        
+        // Show first 6 articles immediately
+        articles.forEach((article, index) => {
+            if (index < itemsToShowInitially) {
+                article.classList.remove('hidden');
+                article.style.opacity = '1';
+            } else {
+                article.classList.add('hidden');
+            }
+        });
+    }
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
     const filterBtns = document.querySelectorAll('.filter-btn');
     const articles = document.querySelectorAll('.blog-article');
@@ -32,15 +62,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Hide load more button if all matching articles are shown
-        if (visibleCount >= totalMatches) {
-            loadMoreBtn.classList.add('hidden');
-        } else {
-            loadMoreBtn.classList.remove('hidden');
+        if (loadMoreBtn) {
+            if (visibleCount >= totalMatches) {
+                loadMoreBtn.classList.add('hidden');
+            } else {
+                loadMoreBtn.classList.remove('hidden');
+            }
         }
 
-        // Trigger ScrollReveal for newly visible items if needed
+        // Trigger ScrollReveal for newly visible items if needed (non-blocking)
         if (window.ScrollReveal) {
-            ScrollReveal().sync();
+            // Use requestAnimationFrame to avoid blocking
+            requestAnimationFrame(() => {
+                ScrollReveal().sync();
+            });
         }
     }
 

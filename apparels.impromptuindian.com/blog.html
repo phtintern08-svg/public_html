@@ -12,8 +12,8 @@
     <!-- ✅ Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- ✅ ScrollReveal -->
-    <script src="https://unpkg.com/scrollreveal"></script>
+    <!-- ✅ ScrollReveal - Load after page content -->
+    <script src="https://unpkg.com/scrollreveal" defer></script>
 
     <!-- ✅ Custom CSS -->
     <link rel="stylesheet" href="css/index.css">
@@ -82,9 +82,9 @@
                 <div class="container mx-auto px-6">
 
                     <!-- Featured Post -->
-                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-16 flex flex-col md:flex-row reveal">
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-16 flex flex-col md:flex-row">
                         <div class="md:w-1/2 h-64 md:h-auto overflow-hidden">
-                            <img src="images/homebg.png" alt="Featured"
+                            <img src="images/homebg.png" alt="Featured" loading="eager"
                                 class="w-full h-full object-cover hover:scale-105 transition duration-500">
                         </div>
                         <div class="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
@@ -132,7 +132,7 @@
                             <div class="h-56 overflow-hidden relative">
                                 <span
                                     class="absolute top-4 left-4 bg-[#FFCC00] text-black text-xs font-bold px-3 py-1 rounded-full z-10">Guide</span>
-                                <img src="images/t_shirt.png" alt="Fabric Guide"
+                                <img src="images/t_shirt.png" alt="Fabric Guide" loading="lazy"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div class="p-6">
@@ -154,7 +154,7 @@
                             <div class="h-56 overflow-hidden relative">
                                 <span
                                     class="absolute top-4 left-4 bg-[#1273EB] text-white text-xs font-bold px-3 py-1 rounded-full z-10">Technology</span>
-                                <img src="images/shirt_oversized.png" alt="Printing Methods"
+                                <img src="images/shirt_oversized.png" alt="Printing Methods" loading="lazy"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div class="p-6">
@@ -176,7 +176,7 @@
                             <div class="h-56 overflow-hidden relative">
                                 <span
                                     class="absolute top-4 left-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10">Sustainability</span>
-                                <img src="images/hoodie.png" alt="Eco Friendly"
+                                <img src="images/hoodie.png" alt="Eco Friendly" loading="lazy"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div class="p-6">
@@ -199,7 +199,7 @@
                                 <span
                                     class="absolute top-4 left-4 bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10">Trends
                                     2025</span>
-                                <img src="images/jacket_bomber.png" alt="Trends"
+                                <img src="images/jacket_bomber.png" alt="Trends" loading="lazy"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div class="p-6">
@@ -221,7 +221,7 @@
                             <div class="h-56 overflow-hidden relative">
                                 <span
                                     class="absolute top-4 left-4 bg-[#FFCC00] text-black text-xs font-bold px-3 py-1 rounded-full z-10">Vendors</span>
-                                <img src="images/vendor.png" alt="Vendor Success"
+                                <img src="images/vendor.png" alt="Vendor Success" loading="lazy"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div class="p-6">
@@ -243,7 +243,7 @@
                             <div class="h-56 overflow-hidden relative">
                                 <span
                                     class="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full z-10">Riders</span>
-                                <img src="images/delivery-rider.png" alt="Delivery"
+                                <img src="images/delivery-rider.png" alt="Delivery" loading="lazy"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div class="p-6">
@@ -265,7 +265,7 @@
                             <div class="h-56 overflow-hidden relative">
                                 <span
                                     class="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10">Identity</span>
-                                <img src="images/uniform_set.png" alt="Teams"
+                                <img src="images/uniform_set.png" alt="Teams" loading="lazy"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div class="p-6">

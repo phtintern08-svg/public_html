@@ -29,14 +29,17 @@ if (menuBtn && mobileMenu) {
     });
 }
 
-// ScrollReveal animations
+// ScrollReveal animations - Initialize after page load to avoid blocking
 if (typeof ScrollReveal !== 'undefined') {
-    ScrollReveal().reveal('.reveal', {
-        distance: '40px',
-        duration: 800,
-        easing: 'ease-in-out',
-        origin: 'bottom',
-        interval: 150
+    // Use requestAnimationFrame to defer initialization
+    requestAnimationFrame(() => {
+        ScrollReveal().reveal('.reveal', {
+            distance: '40px',
+            duration: 800,
+            easing: 'ease-in-out',
+            origin: 'bottom',
+            interval: 150
+        });
     });
 }
 

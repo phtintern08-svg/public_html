@@ -6,6 +6,19 @@
     display: none !important;
 }
 
+/* Ensure articles are visible by default, JavaScript will handle hiding */
+.blog-article {
+    display: block;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Prevent layout shift during image loading */
+.blog-article img {
+    background-color: #f3f4f6;
+    min-height: 224px; /* h-56 = 224px */
+}
+
 .prose p {
     margin-bottom: 1.5rem;
     line-height: 1.8;
