@@ -22,16 +22,21 @@ RewriteCond %{REQUEST_FILENAME} -f
 RewriteCond %{REQUEST_URI} \.(html|htm)$ [NC]
 RewriteRule ^ - [L]
 
-# API requests - proxy to backend (if using reverse proxy)
-# Uncomment if using Apache as reverse proxy to Flask
-# RewriteCond %{REQUEST_URI} ^/api/ [NC]
-# RewriteRule ^(.*)$ http://localhost:5000%{REQUEST_URI} [P,L]
+# IMPORTANT: Let Passenger/Flask handle API routes and POST requests
+# Don't rewrite API endpoints or POST requests to index.html
+RewriteCond %{REQUEST_METHOD} ^(POST|PUT|DELETE|PATCH)$ [NC]
+RewriteRule ^ - [L]
 
-# SPA Routing - serve index.html for all non-file requests
-# This allows client-side routing to work
+# API routes - let Passenger handle them (don't rewrite to index.html)
+RewriteCond %{REQUEST_URI} ^/(login|register|send-otp|verify-otp|api)/ [NC]
+RewriteRule ^ - [L]
+
+# SPA Routing - serve index.html for GET requests to non-file, non-API routes
+# This allows client-side routing to work for frontend pages
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI} !^/api/
+RewriteCond %{REQUEST_METHOD} ^GET$ [NC]
+RewriteCond %{REQUEST_URI} !^/(login|register|send-otp|verify-otp|api)/ [NC]
 RewriteRule ^ index.html [L]
 
 # Security Headers
