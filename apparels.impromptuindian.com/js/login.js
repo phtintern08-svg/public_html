@@ -23,7 +23,24 @@ const ThreadlyApi = window.ThreadlyApi || (() => {
     return {
         baseUrl: base,
         buildUrl,
-        fetch: (path, options = {}) => fetch(buildUrl(path), options)
+        fetch: (path, options = {}) => {
+            // Automatically add Authorization header if token exists
+            const token = localStorage.getItem('token');
+            if (token && !options.headers) {
+                options.headers = {};
+            }
+            if (token && options.headers) {
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
+            // Ensure Content-Type is set if not already set and body is provided
+            if (options.body && !options.headers?.['Content-Type'] && !options.headers?.['content-type']) {
+                if (!options.headers) {
+                    options.headers = {};
+                }
+                options.headers['Content-Type'] = 'application/json';
+            }
+            return fetch(buildUrl(path), options);
+        }
     };
 })();
 window.ThreadlyApi = ThreadlyApi;
@@ -118,6 +135,11 @@ if (loginForm) {
             }
 
             if (response.ok) {
+                // Store JWT token for API authentication
+                if (result.token) {
+                    localStorage.setItem('token', result.token);
+                }
+                
                 // Store complete user info in localStorage
                 localStorage.setItem('user', JSON.stringify(result));
                 localStorage.setItem('user_id', result.user_id);
