@@ -28,7 +28,7 @@
     async function fetchRiderStatus() {
         if (!riderId) return;
         try {
-            const response = await fetch(`${getApiBase()}/rider/status/${riderId}`);
+            const response = await apiFetch(`${getApiBase()}/rider/status/${riderId}`);
             if (response.ok) {
                 const data = await response.json();
                 updateDashboardStats(data);
@@ -95,9 +95,8 @@
                 }
             }
 
-            const response = await fetch(`${getApiBase()}/rider/update-presence`, {
+            const response = await apiFetch(`${getApiBase()}/rider/update-presence`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     rider_id: riderId,
                     is_online: newState,
@@ -149,9 +148,8 @@
         locationInterval = setInterval(async () => {
             try {
                 const coords = await getCurrentLocation();
-                await fetch(`${getApiBase()}/rider/update-presence`, {
+                await apiFetch(`${getApiBase()}/rider/update-presence`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         rider_id: riderId,
                         latitude: coords.lat,
@@ -190,7 +188,7 @@
         if (!container || !riderId) return;
 
         try {
-            const response = await fetch(`${getApiBase()}/rider/deliveries/assigned?rider_id=${riderId}`, {
+            const response = await apiFetch(`${getApiBase()}/rider/deliveries/assigned?rider_id=${riderId}`, {
                 method: 'GET'
             });
 
@@ -262,6 +260,27 @@
 
     function getApiBase() {
         return window.THREADLY_API_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://apparels.impromptuindian.com');
+    }
+
+    // API fetch helper that automatically adds Authorization header
+    function apiFetch(url, options = {}) {
+        const token = localStorage.getItem("token");
+        
+        // Merge headers
+        const headers = {
+            "Content-Type": "application/json",
+            ...(options.headers || {})
+        };
+        
+        // Add Authorization header if token exists
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+        
+        return fetch(url, {
+            ...options,
+            headers: headers
+        });
     }
 
     function refreshDashboard() {
