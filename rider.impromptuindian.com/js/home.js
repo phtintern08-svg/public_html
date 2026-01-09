@@ -1,6 +1,20 @@
 // Rider Home Page Logic
 (function () {
-    // Load user data from individual localStorage items (not the 'user' object)
+    // Use token-based authentication with role check
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    
+    if (!token || role !== "rider") {
+        console.warn("Auth missing — waiting...");
+        setTimeout(() => {
+            if (!localStorage.getItem("token")) {
+                window.location.href = "https://rider.impromptuindian.com/login.html";
+            }
+        }, 500);
+        return;
+    }
+    
+    // Load user data from individual localStorage items
     const user = {
         user_id: localStorage.getItem("user_id"),
         role: localStorage.getItem("role"),
@@ -12,10 +26,6 @@
     let locationInterval = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
-        if (!user.user_id || user.role !== 'rider') {
-            window.location.href = '../login.html';
-            return;
-        }
 
         if (window.lucide) {
             lucide.createIcons();
@@ -266,7 +276,8 @@
     }
 
     function getApiBase() {
-        return window.THREADLY_API_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://apparels.impromptuindian.com');
+        // Always use main domain for API calls (never use hostname switching on multi-subdomain apps)
+        return window.THREADLY_API_BASE || 'https://apparels.impromptuindian.com';
     }
 
     // API fetch helper that automatically adds Authorization header

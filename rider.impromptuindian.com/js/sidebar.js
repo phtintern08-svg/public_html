@@ -1,59 +1,6 @@
-/* Session Transfer Logic */
-(function () {
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.has('user_id') && urlParams.has('role')) {
-    const userId = urlParams.get('user_id');
-    const role = urlParams.get('role');
-
-    if (role === 'rider') {
-      localStorage.setItem('user_id', userId);
-      localStorage.setItem('role', role);
-
-      const username = urlParams.get('username');
-      if (username) {
-        localStorage.setItem('username', username);
-        localStorage.setItem('rider_name', username);
-      }
-
-      const email = urlParams.get('email');
-      if (email) localStorage.setItem('email', email);
-
-      const phone = urlParams.get('phone');
-      if (phone) localStorage.setItem('phone', phone);
-
-      // Create user object for consistency
-      const userObj = { user_id: userId, role: role, username, email, phone };
-      localStorage.setItem('user', JSON.stringify(userObj));
-
-      // Clean URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }
-})();
-
-const ThreadlyApi = window.ThreadlyApi || (() => {
-  const rawBase =
-    window.THREADLY_API_BASE ||
-    window.APP_API_BASE ||
-    localStorage.getItem('THREADLY_API_BASE') ||
-    '';
-
-  let base = rawBase.trim().replace(/\/$/, '');
-  if (!base) {
-    // Force API to main domain (localhost:5000)
-    // This handles requests from subdomains (rider.localhost) correctly
-    base = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://apparels.impromptuindian.com';
-  }
-
-  const buildUrl = (path = '') => `${base}${path.startsWith('/') ? path : `/${path}`}`;
-
-  return {
-    baseUrl: base,
-    buildUrl,
-    fetch: (path, options = {}) => fetch(buildUrl(path), options),
-  };
-})();
-window.ThreadlyApi = ThreadlyApi;
+// Use the authenticated API created in login.js
+// DO NOT recreate ThreadlyApi - it will overwrite the authenticated version with Authorization headers
+const ThreadlyApi = window.ThreadlyApi;
 
 const sidebarHTML = (status) => {
   const isVerified = status === 'active' || status === 'approved';
@@ -232,17 +179,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       const userId = localStorage.getItem('user_id');
       if (userId) {
         // Try to get fresh status from API
+        let response;
         try {
-          const response = await ThreadlyApi.fetch(`/rider/status/${userId}`);
-          if (response.ok) {
-            const data = await response.json();
-            // Use verification_status from the API response
-            status = data.verification_status || 'pending_verification';
-          } else {
-            // Fallback to default if API fails
-            status = 'pending_verification';
-          }
+          response = await ThreadlyApi.fetch(`/rider/status/${userId}`);
         } catch (e) {
+          console.error("API failed", e);
+          return; // DO NOT redirect - just return silently
+        }
+        
+        if (!response || response.status === 401) {
+          console.warn("Session expired");
+          return; // DO NOT redirect - never let sidebar cause navigation
+        }
+        
+        if (response.ok) {
+          const data = await response.json();
+          // Use verification_status from the API response
+          status = data.verification_status || 'pending_verification';
+        } else {
           // Fallback to default if API fails
           status = 'pending_verification';
         }
@@ -304,7 +258,19 @@ async function fetchNotificationCount() {
       return;
     }
 
-    const response = await ThreadlyApi.fetch(`/rider/notifications?rider_id=${userId}&unread_only=true`);
+    let response;
+    try {
+      response = await ThreadlyApi.fetch(`/rider/notifications?rider_id=${userId}&unread_only=true`);
+    } catch (e) {
+      console.error("API failed", e);
+      return; // DO NOT redirect - just return silently
+    }
+    
+    if (!response || response.status === 401) {
+      console.warn("Session expired");
+      return; // DO NOT redirect - never let sidebar cause navigation
+    }
+    
     if (response.ok) {
       const data = await response.json();
       const notificationsCountEl = document.getElementById('notifications-count');
@@ -321,10 +287,14 @@ async function fetchNotificationCount() {
 
 function logout(event) {
   event.preventDefault();
-  localStorage.removeItem('rider_id');
-  localStorage.removeItem('rider_name');
-  localStorage.removeItem('rider_email');
-  localStorage.removeItem('rider_phone');
-  localStorage.removeItem('role');
-  window.location.href = window.location.hostname === 'localhost' ? 'http://localhost:5000/' : 'https://apparels.impromptuindian.com/';
+  // Remove all auth-related keys
+  localStorage.removeItem("token");
+  localStorage.removeItem("user_id");
+  localStorage.removeItem("role");
+  localStorage.removeItem("username");
+  localStorage.removeItem("email");
+  localStorage.removeItem("phone");
+  localStorage.removeItem("rider_is_online");
+  
+  window.location.href = "https://rider.impromptuindian.com/login.html";
 }

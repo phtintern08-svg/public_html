@@ -9,13 +9,8 @@ const ThreadlyApi = window.ThreadlyApi || (() => {
 
     let base = rawBase.trim().replace(/\/$/, '');
     if (!base) {
-        const origin = window.location.origin;
-        if (origin && origin.startsWith('http')) {
-            base = origin.replace(/\/$/, '');
-        } else {
-            // PRODUCTION ONLY - Use production domain
-            base = 'https://apparels.impromptuindian.com';
-        }
+        // Always use main domain for API calls (never use hostname switching on multi-subdomain apps)
+        base = 'https://apparels.impromptuindian.com';
     }
 
     const buildUrl = (path = '') => `${base}${path.startsWith('/') ? path : `/${path}`}`;
@@ -23,7 +18,7 @@ const ThreadlyApi = window.ThreadlyApi || (() => {
     return {
         baseUrl: base,
         buildUrl,
-        fetch: (path, options = {}) => {
+        fetch: async (path, options = {}) => {
             // Automatically add Authorization header if token exists
             const token = localStorage.getItem('token');
             if (token && !options.headers) {
@@ -39,7 +34,19 @@ const ThreadlyApi = window.ThreadlyApi || (() => {
                 }
                 options.headers['Content-Type'] = 'application/json';
             }
-            return fetch(buildUrl(path), options);
+            
+            // Prevent fetch from following HTML redirects (backend must return JSON, not HTML)
+            const response = await fetch(buildUrl(path), {
+                ...options,
+                redirect: "manual"
+            });
+            
+            // Check if backend tried to redirect (should never happen for API calls)
+            if (response.type === "opaqueredirect") {
+                throw new Error("Redirected by backend - backend must return JSON, not HTML redirects");
+            }
+            
+            return response;
         }
     };
 })();
@@ -169,6 +176,16 @@ if (loginForm) {
             }
 
             if (response.ok) {
+                // Block wrong-role logins: Check if accessing rider portal with non-rider role
+                const currentUrl = window.location.href;
+                if (currentUrl.includes('rider') && result.role !== 'rider') {
+                    showAlert('Access Denied', 'This portal is only for riders', 'error');
+                    return;
+                }
+                
+                // Only clear non-auth data (never wipe token, user_id, role)
+                localStorage.removeItem("rider_is_online");
+                
                 // Store JWT token for API authentication
                 if (result.token) {
                     localStorage.setItem('token', result.token);
@@ -183,7 +200,12 @@ if (loginForm) {
 
                 showAlert('Success', 'Login successful!', 'success');
                 setTimeout(() => {
-                    window.location.href = result.redirect_url;
+                    // DO NOT trust backend redirect URLs for role-based routing
+                    if (result.role === "rider") {
+                        window.location.href = "https://rider.impromptuindian.com/home.html";
+                    } else {
+                        window.location.href = "https://apparels.impromptuindian.com/";
+                    }
                 }, 1500);
             } else {
                 showAlert('Login Failed', result.error || 'Invalid credentials', 'error');

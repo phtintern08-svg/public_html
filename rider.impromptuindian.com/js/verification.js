@@ -36,17 +36,20 @@ let verificationStatus = 'pending_verification'; // Default
 let documents = {};
 let currentDocumentId = null;
 let selectedFile = null;
-// Load user data from individual localStorage items (not the 'user' object)
+// Use token-based authentication (backend controls roles)
+const token = localStorage.getItem("token");
+
+if (!token) {
+    window.location.href = "../login.html";
+}
+
+// Load user data from individual localStorage items
 const user = {
     user_id: localStorage.getItem("user_id"),
     role: localStorage.getItem("role"),
     username: localStorage.getItem("username"),
     email: localStorage.getItem("email")
 };
-
-if (!user.user_id || user.role !== 'rider') {
-    window.location.href = '../login.html';
-}
 
 const riderId = user.user_id;
 
