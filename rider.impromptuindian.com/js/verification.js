@@ -36,9 +36,15 @@ let verificationStatus = 'pending_verification'; // Default
 let documents = {};
 let currentDocumentId = null;
 let selectedFile = null;
-const user = JSON.parse(localStorage.getItem('user'));
+// Load user data from individual localStorage items (not the 'user' object)
+const user = {
+    user_id: localStorage.getItem("user_id"),
+    role: localStorage.getItem("role"),
+    username: localStorage.getItem("username"),
+    email: localStorage.getItem("email")
+};
 
-if (!user || user.role !== 'rider') {
+if (!user.user_id || user.role !== 'rider') {
     window.location.href = '../login.html';
 }
 

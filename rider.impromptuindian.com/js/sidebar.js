@@ -229,23 +229,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Get user status
     let status = 'pending_verification'; // Default
     try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (user) {
+      const userId = localStorage.getItem('user_id');
+      if (userId) {
         // Try to get fresh status from API
         try {
-          const response = await ThreadlyApi.fetch(`/rider/status/${user.user_id}`);
+          const response = await ThreadlyApi.fetch(`/rider/status/${userId}`);
           if (response.ok) {
             const data = await response.json();
             // Use verification_status from the API response
             status = data.verification_status || 'pending_verification';
-            // Update local storage
-            user.verification_status = status;
-            localStorage.setItem('user', JSON.stringify(user));
           } else {
-            status = user.verification_status || user.status || 'pending_verification';
+            // Fallback to default if API fails
+            status = 'pending_verification';
           }
         } catch (e) {
-          status = user.verification_status || user.status || 'pending_verification';
+          // Fallback to default if API fails
+          status = 'pending_verification';
         }
       }
     } catch (e) {
@@ -299,13 +298,13 @@ function populateUserData() {
 
 async function fetchNotificationCount() {
   try {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || !user.user_id) {
-      console.log('No user found in localStorage');
+    const userId = localStorage.getItem('user_id');
+    if (!userId) {
+      console.log('No user_id found in localStorage');
       return;
     }
 
-    const response = await ThreadlyApi.fetch(`/rider/notifications?rider_id=${user.user_id}&unread_only=true`);
+    const response = await ThreadlyApi.fetch(`/rider/notifications?rider_id=${userId}&unread_only=true`);
     if (response.ok) {
       const data = await response.json();
       const notificationsCountEl = document.getElementById('notifications-count');

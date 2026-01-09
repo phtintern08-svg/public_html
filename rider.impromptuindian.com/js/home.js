@@ -1,11 +1,18 @@
 // Rider Home Page Logic
 (function () {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const riderId = user ? user.user_id : null;
+    // Load user data from individual localStorage items (not the 'user' object)
+    const user = {
+        user_id: localStorage.getItem("user_id"),
+        role: localStorage.getItem("role"),
+        username: localStorage.getItem("username"),
+        email: localStorage.getItem("email")
+    };
+    
+    const riderId = user.user_id;
     let locationInterval = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
-        if (!user || user.role !== 'rider') {
+        if (!user.user_id || user.role !== 'rider') {
             window.location.href = '../login.html';
             return;
         }

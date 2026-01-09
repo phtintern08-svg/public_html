@@ -174,8 +174,7 @@ if (loginForm) {
                     localStorage.setItem('token', result.token);
                 }
                 
-                // Store complete user info in localStorage
-                localStorage.setItem('user', JSON.stringify(result));
+                // Store user info in localStorage as individual items (cleaner approach)
                 localStorage.setItem('user_id', result.user_id);
                 localStorage.setItem('role', result.role);
                 localStorage.setItem('username', result.username);
